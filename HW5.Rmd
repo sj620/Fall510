@@ -1,0 +1,104 @@
+---
+title: "HW5"
+output: html_document
+---
+
+
+```{r}
+#Load required packages
+require(ggplot2)
+
+#Load diamonds datafram
+data(diamonds)
+
+#Question1. 
+#This function takes a dataframe as an input and returns a new dataframe which has the numeric columns of the old dataframe as an output.
+#Parameters: the input dataframe 
+
+Extract_NumCol <- function(dataFrame){
+  #create a function called Extract_NumCol,and an input dataFrame is stored in it.
+  newDataFrame <- dataFrame[sapply(dataFrame, is.numeric)]#use is.numeric function in sapply  to check each column in dataFrame, then returns True if the column is numeric and otherwise False 
+  return(newDataFrame)}
+#Test the function
+Extract_NumCol(diamonds)
+print(diamonds)
+
+
+
+
+#Question 2:
+
+#The function below takes a dataframe as an input and returns a new dataframe which has the Pearson correlation coefficient for each pair of numeric columns in the old dataframe as an output. 
+#Parameters:dataFrame
+
+require(ggplot2)
+data(diamonds)
+Cor_Coeff <- function(dataFrame){
+ #create a function called Cor_Coeff which stores the original dataFrame
+  dataFrame <- Extract_NumCol(dataFrame)
+  #extract the numeric columns from dataframe by function Extract_NumCol like the Question1
+  Pair_variable<-c() 
+  #create a variable called Pair_variables,and store the pair of variable names in it
+  Pearson_cor_coeff<-c() #create a variable Pair_of_variables,and store the corresponding Pearson correlation coefficient in it
+  k = 1
+  #We loop through each column in dataFrame 
+  for(i in 1:(ncol(dataFrame)-1)){
+    #go through from the first column to the penultimate and do not repeat pairs of columns in the dataFrame
+   
+    for(j in (i+1):(ncol(dataFrame))){
+      #for loop starts from the (i+1)th column to the last column in our dataFrame
+      Pair_variable[k] <- paste(colnames(dataFrame)[i],"-",colnames(dataFrame)[j],sep="")
+      #produce pair of variable names in a single string separated by a - using paste(), then store them in Pair_of_variables
+      Pearson_cor_coeff[k] <- cor(dataFrame[,i],dataFrame[,j],method="pearson")
+      #calculate the correlation coefficient of ith column and jth column and then store the correlation into the Pearson_cor_coeff 
+      k = k+1  #start from the next variable in Pair_variable and Pearson_cor_coeff
+    }
+  }
+  #We initialize the return variable to an empty dataframe with one row for each pair of columns taken above
+  newDataFrame <-data.frame(Pair_variable,Pearson_cor_coeff)
+  #create a new data frame called newDataFrame which has the Pair_of_variables and Pearson_cor_coeff  
+
+  return(newDataFrame)#return to the new data frame as an output
+}
+
+#Tests the function
+Cor_Coeff(diamonds)
+
+
+
+#Question3
+#This function takes a dataframe as an input and returns scatter plots which contains a title and calculated Pearson correlation coefficient
+#Parameters: dataframe
+scatter_plot <- function(dataFrame){
+  #create a function called scatter_plot which contains the dataframe
+  newdataFrame <- Extract_NumCol(dataFrame)
+  #create a newdataFrame by Extract_NumCol function like Question 1
+  require(ggplot2) #load ggplot2 package
+  require(grid)    #load grid package
+  require(gridExtra) #load gridExtra package
+  splotall <- list()
+  #create a empty variable called splotall which will contains all plots
+  n =1 #go through from the splotall and make it 1
+  for (i in 1: (ncol(newdataFrame)-1)){
+    ##go through each column in dataFrame from the first one to the penultimate
+    for (j in (i+1):ncol(newdataFrame)){
+      #starts from the (i+1)th column to the last column 
+      plotdata <- data.frame(newdataFrame[,i],newdataFrame[,j]) 
+      #create the plotdata to store the data which we will plot
+      colnames(plotdata)<-c(colnames(newdataFrame)[i], colnames(newdataFrame)[j])
+      #name the columns of plotdata ith and jth column in newdataFrame
+      xyPCorr <- cor(newdataFrame[,i],newdataFrame[,j],method="pearson")
+      #create xyCorr which stores the correlation between the two columns in newdataFrame
+      splotall[[n]]<-(ggplot(plotdata, aes_string(x=colnames(dataFrame)[i],                                         y=colnames(newdataFrame)[j]))+geom_point()+ggtitle(paste("Correlation between", colnames(newdataFrame)[i], "and", colnames(newdataFrame)[j], ":", xyPCorr )))
+      #create the scatter plot for plotdata, the x label is ith column name in dataframep, the y label is it jth column name in dataframep,use aes_string to set the axes, use geoms_points to plot scatter points,use ggtitle to give the desired title to the plot, and the title is xyPCorr
+   n=n+1  # start from the next variable in the splotall
+    }
+  }
+  do.call(grid.arrange,splotall)# #produce all plots in the same picture by using do.call()
+}
+scatter_plot(diamonds)#test the function
+```
+
+
+
+
