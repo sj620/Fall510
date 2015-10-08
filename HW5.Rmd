@@ -89,8 +89,8 @@ scatter_plot <- function(dataFrame){
       #name the columns of plotdata ith and jth column in newdataFrame
       xyPCorr <- cor(newdataFrame[,i],newdataFrame[,j],method="pearson")
       #create xyCorr which stores the correlation between the two columns in newdataFrame
-      splotall[[n]]<-(ggplot(plotdata, aes_string(x=colnames(dataFrame)[i],                                         y=colnames(newdataFrame)[j]))+geom_point()+ggtitle(paste("Correlation between", colnames(newdataFrame)[i], "and", colnames(newdataFrame)[j], ":", xyPCorr )))
-      #create the scatter plot for plotdata, the x label is ith column name in dataframep, the y label is it jth column name in dataframep,use aes_string to set the axes, use geoms_points to plot scatter points,use ggtitle to give the desired title to the plot, and the title is xyPCorr
+      splotall[[n]]<-(ggplot(plotdata, aes_string(x=colnames(newdataFrame)[i],                    y=colnames(newdataFrame)[j]))+geom_point()+ggtitle(paste("Correlatio              n between", colnames(newdataFrame)[i], "and", colnames(newdataFrame)[j], ":", xyPCorr )))
+      #create the scatter plot for plotdata, the x label is ith column name in dataframep, the y label is it jth column name in newdatFrame,use aes_string to set the axes, use geoms_points to plot scatter points,use ggtitle to give the desired title to the plot, and the title is xyPCorr
    n=n+1  # start from the next variable in the splotall
     }
   }
