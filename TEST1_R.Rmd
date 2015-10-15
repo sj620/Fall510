@@ -17,9 +17,9 @@ log_col<-c()
 ratio1 = length(mtcars$vs[mtcars$vs==1])/length(mtcars$vs)
  #Calculate the ratio of 1 in the mtcars$vs variable, store it in ratio1
 numbers<-runif(nrow(diamonds),0,1)
-# I searched for the method of random distribution in R and choose runif, use runif to randomly input 0 and 1 into nums based on ratio1.
+# I googled for the method of random distribution in R and choose runif, use runif to randomly input 0 and 1 into numbers based on ratio1.
 for(i in 1:(nrow(diamonds))){# go through from the first one to the last one in nrow(diamonds)
-  if(numbers[i]<=ratio1){#check if nums[i] equals to 1
+  if(numbers[i]<=ratio1){#check if numbers[i] equals to 1
     log_col[i]=TRUE   #if trail[i] equals to 1, then it's true in log_col[i]
   }   
    else{
@@ -54,7 +54,7 @@ for(i in 1:ncol(Extract_all(diamonds1))){
   #use for loop to go through each one in the factor and  logical columns of extract_all(diamonds1)).
   bargraph <- ggplot(Extract_all(diamonds1),aes_string(colnames(Extract_all(diamonds1)[i]))) + geom_bar(fill="grey")
 }
-  #create a variable called bargraph,using ggplot to plot the graph,use column names by the aes_string(). Then each column name will be used to label our x axis.  Then fill the bar graph with grey color.
+  #create a variable called bargraph,using ggplot to plot the graph,use column names by the aes_string(). Then fill the bar graph with grey color.
   bargraph  #print our bargraph
 
 
@@ -63,7 +63,7 @@ for(i in 1:ncol(Extract_all(diamonds1))){
 #Question4 This function takes a dataframe as an input and  returns a list of frequency tables for each catogorical and logical variables as an output.
 
 n<-list(table(Extract_all(diamonds1)[1]),table(Extract_all(diamonds1)[2]),table(Extract_all(diamonds1)[3]),table(Extract_all(diamonds1)[4]))
-#create a list containing 4 tables.  use the columns index number to access to each column.
+#create a list containing 4 tables.  use the columns index number for each column.
 
 
 
