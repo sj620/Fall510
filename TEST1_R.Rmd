@@ -1,0 +1,72 @@
+---
+title: "TEST1_R"
+output: html_document
+---
+
+
+```{r}
+#Question1 This function takes a dataframe as an input and  adds a logical column to the diamonds, this column containing TRUE or FALSE that would be 53,490 rows long and the ratio of TRUE and FALSE would equal the ratio of 1's and 0's in the mtcars variable.  
+
+require(ggplot2)#load ggplot2 package
+require(grid) #load grid package
+data(diamonds)
+data(mtcars)
+
+log_col<-c()
+#create a vairable called log_col and make it empty
+ratio1 = length(mtcars$vs[mtcars$vs==1])/length(mtcars$vs)
+ #Calculate the ratio of 1 in the mtcars$vs variable, store it in ratio1
+numbers<-runif(nrow(diamonds),0,1)
+# I searched for the method of random distribution in R and choose runif, use runif to randomly input 0 and 1 into nums based on ratio1.
+for(i in 1:(nrow(diamonds))){# go through from the first one to the last one in nrow(diamonds)
+  if(numbers[i]<=ratio1){#check if nums[i] equals to 1
+    log_col[i]=TRUE   #if trail[i] equals to 1, then it's true in log_col[i]
+  }   
+   else{
+     log_col[i]=FALSE#if log_col[i] not equal to 1, then put it FALSE in log_col[i]
+   }
+ }
+  diamonds1<-data.frame(diamonds,log_col)
+  
+  
+#Question2
+#This question is similar to the Question 1 in HW5, so use the same method.This function takes a dataframe as an input and returns a new dataframe which has the all the factor and logical columns of the old dataframe as an output.
+#Parameters: the input dataframe 
+
+
+Extract_all <- function(dataframe){
+  #create a function called Extract_all,and an input dataframe is stored in it.
+  newfactor <- dataframe[sapply(dataframe, is.factor)]#use is.factor function in sapply  to check each column in dataframe, then return True if the column is factor and otherwise False 
+  newlogical<- dataframe[sapply(dataframe, is.logical)]
+  #use is.logical function in sapply  to check each column in dataframe, then return True if the column is logical and otherwise False 
+  newdataframe<-data.frame(newfactor,newlogical)
+  #create a variable called newdataframe which contains all the factors and logical columns
+  return(newdataframe)}
+#Test the function
+print(Extract_all(diamonds1))
+head(Extract_all(diamonds1))#use head function
+str(Extract_all(diamonds1))#present the structure of new data frame
+
+#Question3 This function takes a dataframe as an input and returns a bar graph  for factors and logical variables.
+
+
+for(i in 1:ncol(Extract_all(diamonds1))){
+  #use for loop to go through each one in the factor and  logical columns of extract_all(diamonds1)).
+  bargraph <- ggplot(Extract_all(diamonds1),aes_string(colnames(Extract_all(diamonds1)[i]))) + geom_bar(fill="grey")
+}
+  #create a variable called bargraph,using ggplot to plot the graph,use column names by the aes_string(). Then each column name will be used to label our x axis.  Then fill the bar graph with grey color.
+  bargraph  #print our bargraph
+
+
+
+
+#Question4 This function takes a dataframe as an input and  returns a list of frequency tables for each catogorical and logical variables as an output.
+
+n<-list(table(Extract_all(diamonds1)[1]),table(Extract_all(diamonds1)[2]),table(Extract_all(diamonds1)[3]),table(Extract_all(diamonds1)[4]))
+#create a list containing 4 tables.  use the columns index number to access to each column.
+
+
+
+
+```
+
