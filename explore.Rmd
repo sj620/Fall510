@@ -1,0 +1,121 @@
+
+```{r}
+require(ggplot2)#load ggplot2 package
+require(grid) #load grid package
+data(diamonds)
+data(mtcars)
+#first append on a logical column to the diamonds data frame. we will use it to test our explore function later.
+log_col<-c()
+#create a vairable called log_col and make it empty
+ratio1 = length(mtcars$vs[mtcars$vs==1])/length(mtcars$vs)
+ #Calculate the ratio of 1 in the mtcars$vs variable, store it in ratio1
+numbers<-runif(nrow(diamonds),0,1)
+# I googled for the method of random distribution in R and choose runif, use runif to randomly input 0 and 1 into numbers based on ratio1.
+for(i in 1:(nrow(diamonds))){# go through from the first one to the last one in nrow(diamonds)
+  if(numbers[i]<=ratio1){#check if numbers[i] equals to 1
+    log_col[i]=TRUE   #if trail[i] equals to 1, then it's true in log_col[i]
+  }   
+   else{
+     log_col[i]=FALSE#if log_col[i] not equal to 1, then put it FALSE in log_col[i]
+   }
+ }
+  diamonds1<-data.frame(diamonds,log_col)
+
+  
+
+explore <- function(Dataframe, bin_sizes, corr_threshold){
+##create a function called explore and send in the numeric data frames, some bin sizes and a specific threshold as parameter
+#Question1 
+  Num_Col <- Dataframe[sapply(Dataframe, is.numeric)] #Creates a variable called Num_Col, which is the dataframe containing all of our numerical columns. We obtain this data frame by using the sapply function. This function goes through each column in our data frame and determines whether that column contains numeric values by using the is.numeric function. 
+  for(i in 1:length(Num_Col)){ #Goes through each number from the first one to the last one of Num_Col
+    for(j in bin_sizes){#Goes through each element of bin_sizes
+      num_bins <- (max(Num_Col[[i]])-min(Num_Col[[i]]))/bin_sizes[j]#calculate tbe number of bins
+      val <- Num_Col[[i]]
+      print(ggplot(Dataframe, aes(x=val)) + geom_histogram(binwidth=j, fill='blue')
+      + geom_vline(aes(xintercept=mean(val), colour = 'red')) + labs(x=names(Num_Col[i])))
+      #use the ggplot function to create a histogram               plot a histogram with blue color, add  a red vertical line using geom_vline for mean is added  and label all the variables in our data frame.
+     
+      print(ggplot(Dataframe, aes(x=val)) + geom_histogram(aes(y= ..density..), binwidth =
+      j, fill='blue') + geom_vline(aes(xintercept=mean(val), colour = 'red'))           + labs(x=names(Num_Col[i])))
+      #do the similar thing as the last step, plot density histograms for each bin width j. We do this by changing the input to our geom_histogram layer. 
+    }
+  }  
+
+
+#Question2
+list0 <- Dataframe[sapply(Dataframe, is.factor)] #create a list called list0 with categorical columns in our Dataframe by using the sapply function, which applies the is.factor to each of the columns in our dataframe.
+  if(length(list0)==0){ #If there are no categorical variables, then we print the statement  ""no categorical variables
+    print("no categorical variables") 
+  }
+  else{ #otherwise we will go through each column in list0
+    for(i in 1:length(list0)){ 
+      barplot(table(list0[[i]])) #plot a bar graph by putting the table function for our column as an input of our barplot function. 
+    }
+  }
+  list1 <- Dataframe[sapply(Dataframe, is.logical)] #create a list called list1 with binary columns from our Dataframe by the same sapply function as we create list0. 
+  if(length(list1)==0){ #If there are no binary variables
+    print("no binary variables")# then we print the statement "no binary variables"  
+  }
+  else{    #otherwise, we will go through each element in list1
+    for(i in 1:length(list1)){
+      barplot(table(list1[[i]])) #plot a bar graph
+    }
+  }
+
+  #Question3
+  for(i in 1:(length(Num_Col)-1)){ #go through every one of our numerical variables to the penultimate one.
+    for(j in (i+1):length(Num_Col)){ #For each variable in our index, goes through each variable after it to avoid repetition of correlations.
+      print((cor(Num_Col[i], Num_Col[j]))**2) #For each pair of variables, prints the correlation of that pair.
+    }
+  }
+
+  #Question4
+  categ_table <- NULL #Creates a variable categ_table, which will be appended and returned. 
+  for(i in list0){ #Goes through every one of our categorical variables
+    categ_table <- c(categ_table, table(i)) #For each of those variables, adds a frequency table
+  }
+  print(categ_table)#Prints our categ_table after it is done. 
+
+  binary_table <- NULL #Create a variable called binary_table 
+  for(i in list1){ #Goes through every one of our binary variables
+    binary_table <- c(binary_table, table(i)) #For each of those variables, adds a frequency table
+  }
+  print(binary_table) #print our binary_table
+  for(i in Num_Col){ #Goes through each of our numerical variables
+    print(summary(i)) #For each variable, returns a summary statistics table using the summary function.
+
+
+  }
+
+ 
+  pairs <- NULL #Creates an empty list called pairs. 
+  r_squared <- NULL #Creates an empty list called r_squared
+  for(i in 1:(length(Num_Col)-1)){ #go through all numerical variables to the penultimate one
+    for(j in (i+1):length(Num_Col)){ #goes through each variable after it to avoid repetition.
+      pairs <- c(pairs, paste(names(Num_Col[i]), names(Num_Col[j]), sep = '-')) #Adds the name of the pair,use the paste function to create a single string with the two names separated by the character '-'. 
+      r_squared <- c(r_squared, cor(Num_Col[i],Num_Col[j])**2) #Adds the r-squared value between the two variables to the  r_squared list using the cor function and squaring our result. 
+    }
+  }
+  df_rsquared <- data.frame(pairs, r_squared) #Creates a data frame called df_rsquared by using the data.frame function. Put our appended pairs and r_squared vectors as our two columns. 
+  print(df_rsquared) #Print the data frame. 
+
+ 
+  pairs0 <- NULL #Creates an empty list is called pairs0. 
+  Pearson_Coeff <- NULL #Creates an empty list called Pearson_Coeff. 
+  for(i in 1:(length(Num_Col)-1)){ #go through each pair of numerical variables to the penultimate one
+    for(j in (i+1):length(Num_Col)){ #do this step as we did before. 
+      if (abs(cor(Num_Col[i],Num_Col[j]))>corr_threshold){ #If the absolute value of the correlation is less than our correlation threshold
+         pairs0 <- c(pairs0, paste(names(Num_Col[i]), names(Num_Col[j]))) #Add the names of our two variables to our pairs0 vector. 
+        Pearson_Coeff <- c(Pearson_Coeff, cor(Num_Col[i], Num_Col[j])) #add the correlation of those two variables to Pearson_Coeff. 
+      }
+    }
+  }
+  corrframe <- data.frame(pairs0, Pearson_Coeff) #Create a new data frame called corrframe which contains the two vectors pairs0 and Pearson_Coeff. 
+  print(corrframe) #Print the data frame. 
+}
+
+#Test the explore function
+explore(diamonds1, c(5,20,50), .25)
+explore(mtcars, c(5,20,50), .25)
+```
+
